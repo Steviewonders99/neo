@@ -1,6 +1,7 @@
 mod activity;
 mod commands;
 mod pty;
+mod recents;
 mod window;
 
 use std::sync::Arc;
@@ -22,6 +23,8 @@ pub fn run() {
             commands::pane_write,
             commands::pane_resize,
             commands::pane_kill,
+            commands::list_recent_dirs,
+            commands::add_recent_dir,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

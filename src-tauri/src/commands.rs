@@ -38,3 +38,15 @@ pub fn pane_kill(
 ) -> Result<(), String> {
     kill_pane(manager.inner(), &id)
 }
+
+use crate::recents::{self, RecentDir};
+
+#[tauri::command]
+pub fn list_recent_dirs() -> Vec<RecentDir> {
+    recents::load()
+}
+
+#[tauri::command]
+pub fn add_recent_dir(cwd: String) -> Vec<RecentDir> {
+    recents::add(&cwd)
+}
