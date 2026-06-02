@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+# Required for tauri-action to upload assets to the GitHub Release it creates.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish NEO.app + .dmg
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            args: "--target aarch64-apple-darwin"
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+            args: "--target x86_64-apple-darwin"
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+          key: ${{ matrix.target }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build + publish
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional Apple signing/notarization — leave repo secrets unset to ship
+          # an unsigned build (users will need to right-click → Open the first time).
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "NEO ${{ github.ref_name }}"
+          releaseBody: |
+            See the [CHANGELOG](https://github.com/Steviewonders99/neo/blob/main/CHANGELOG.md) for what's new.
+
+            ## Install
+            Download the `.dmg` for your Mac:
+            - Apple Silicon (M1/M2/M3/M4): `*_aarch64.dmg`
+            - Intel: `*_x64.dmg`
+
+            Mount the DMG and drag NEO into `/Applications`.
+
+            > First-launch note: if you see "NEO cannot be opened because the developer cannot be verified" — right-click → Open → Open. This happens for unsigned builds; the maintainer ships signed releases when Apple Developer credentials are configured in CI.
+          releaseDraft: true
+          prerelease: false
+          includeUpdaterJson: false
+          args: ${{ matrix.args }}
