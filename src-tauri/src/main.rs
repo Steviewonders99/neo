@@ -1,5 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    terminal_panes_lib::run();
+    neo_lib::run();
 }

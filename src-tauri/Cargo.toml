@@ -1,12 +1,12 @@
 [package]
-name = "terminal-panes"
+name = "neo"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "terminal_panes_lib"
+name = "neo_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

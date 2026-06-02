@@ -44,7 +44,10 @@ export function MatrixRain() {
 
     const ro = new ResizeObserver(resize)
     ro.observe(canvas)
-    resize()
+    // Defer first resize until layout has settled — clientWidth/Height can be 0
+    // during the synchronous mount pass, which would leave `cols` at 0 and the
+    // canvas blank forever.
+    requestAnimationFrame(resize)
 
     let lastTime = performance.now()
     const draw = (now: number) => {

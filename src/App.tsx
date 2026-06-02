@@ -2,7 +2,7 @@ import { WindowChrome } from './components/WindowChrome'
 import { GridLayout } from './components/GridLayout'
 import { PaneLauncher } from './components/PaneLauncher'
 import { MinimizedDock } from './components/MinimizedDock'
-import { MatrixRain } from './components/MatrixRain'
+import { Welcome } from './components/Welcome'
 import { useStore } from './state/store'
 
 export default function App() {
@@ -16,21 +16,7 @@ export default function App() {
     <div className="app-root">
       <WindowChrome />
       <MinimizedDock />
-      {showWelcome ? (
-        <button
-          className="welcome"
-          onClick={openLauncher}
-          aria-label="open launcher"
-        >
-          <MatrixRain />
-          <div className="welcome-overlay">
-            <h1 className="welcome-title">NEO</h1>
-            <p className="welcome-sub">click anywhere to start a session</p>
-          </div>
-        </button>
-      ) : (
-        <GridLayout />
-      )}
+      {showWelcome ? <Welcome /> : <GridLayout />}
       {!showWelcome && (
         <button
           className="fab-new-pane"
