@@ -3,19 +3,35 @@ html, body, #root { margin: 0; height: 100%; background: transparent; }
 body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
 .window-chrome {
   display: flex;
-  align-items: stretch;
-  height: 38px;
+  align-items: center;
+  height: 42px;
   user-select: none;
   -webkit-app-region: drag;
   -webkit-user-select: none;
   flex-shrink: 0;
   position: relative;
-  z-index: 5;
-  /* Translucent fill so clicks register on the webview surface — fully
-     transparent chrome lets clicks pass through to NSVisualEffectView,
-     which prevents Tauri's drag region from receiving the events. */
-  background: rgba(15, 18, 15, 0.55);
-  border-bottom: 1px solid rgba(57, 255, 20, 0.08);
+  z-index: 10;
+  /* Visible matrix-tinted strip so users see the drag handle AND so clicks
+     register on the webview surface (fully transparent chrome lets clicks
+     pass through to NSVisualEffectView, blocking Tauri's drag region). */
+  background: linear-gradient(180deg, rgba(20, 30, 20, 0.9), rgba(10, 18, 10, 0.8));
+  border-bottom: 1px solid rgba(57, 255, 20, 0.25);
+  box-shadow: 0 1px 0 rgba(57, 255, 20, 0.05);
+  cursor: grab;
+}
+.window-chrome:active { cursor: grabbing; }
+.window-chrome-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--green);
+  letter-spacing: 0.35em;
+  text-shadow: var(--green-glow);
+  opacity: 0.85;
+  pointer-events: none;
+  user-select: none;
+  text-align: center;
+  flex: 1;
 }
 .window-chrome-traffic-light-spacer {
   width: 80px;

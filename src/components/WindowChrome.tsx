@@ -1,21 +1,39 @@
 import { getCurrentWindow } from '@tauri-apps/api/window'
 
 function startDrag(e: React.MouseEvent) {
-  // Only respond to a real primary-button drag — not right-click, not multi-touch.
-  if (e.buttons !== 1) return
-  // Don't hijack double-click (that's the OS "zoom" gesture).
+  // Primary button only — ignore right/middle clicks.
+  if (e.button !== 0) return
+  // Double-click on the title bar zooms (macOS standard).
   if (e.detail === 2) {
-    getCurrentWindow().toggleMaximize().catch(() => {})
+    getCurrentWindow().toggleMaximize().catch((err) =>
+      console.warn('toggleMaximize failed', err),
+    )
     return
   }
-  getCurrentWindow().startDragging().catch(() => {})
+  getCurrentWindow()
+    .startDragging()
+    .catch((err) => console.warn('startDragging failed', err))
 }
 
 export function WindowChrome() {
   return (
-    <div className="window-chrome" onMouseDown={startDrag}>
-      <div className="window-chrome-traffic-light-spacer" onMouseDown={startDrag} />
-      <div className="window-chrome-drag" onMouseDown={startDrag} />
+    <div
+      className="window-chrome"
+      onMouseDown={startDrag}
+      data-tauri-drag-region
+    >
+      <div
+        className="window-chrome-traffic-light-spacer"
+        onMouseDown={startDrag}
+        data-tauri-drag-region
+      />
+      <div
+        className="window-chrome-drag"
+        onMouseDown={startDrag}
+        data-tauri-drag-region
+      >
+        <span className="window-chrome-title">NEO</span>
+      </div>
     </div>
   )
 }
