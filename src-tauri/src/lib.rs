@@ -1,9 +1,16 @@
+mod pty;
 mod window;
 
+use std::sync::Arc;
+use pty::PtyManager;
+
 pub fn run() {
+    let pty_manager = PtyManager::new();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
+        .manage::<Arc<PtyManager>>(pty_manager)
         .setup(|app| {
             window::configure_main_window(&app.handle())?;
             Ok(())
