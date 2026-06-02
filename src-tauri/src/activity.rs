@@ -169,6 +169,10 @@ impl ActivityDetector {
     pub fn state(&self) -> ActivityState {
         self.state
     }
+
+    pub fn tail_text(&self) -> String {
+        self.tail.as_str().into_owned()
+    }
 }
 
 #[cfg(test)]

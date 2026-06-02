@@ -67,3 +67,52 @@ pub fn set_pane_meta(
 pub fn pane_focus(notifier: State<'_, Arc<Notifier>>, app: AppHandle, id: String) {
     notifier.on_not_attention(&app, &id);
 }
+
+#[tauri::command]
+pub fn list_dir_completions(prefix: String) -> Vec<String> {
+    use std::fs;
+    use std::path::Path;
+
+    // Expand a leading ~ to the home dir
+    let expanded = if let Some(stripped) = prefix.strip_prefix('~') {
+        if let Some(home) = dirs::home_dir() {
+            home.join(stripped.trim_start_matches('/')).to_string_lossy().into_owned()
+        } else {
+            prefix.clone()
+        }
+    } else {
+        prefix.clone()
+    };
+
+    let path = Path::new(&expanded);
+    // If the user typed a complete dir (ending in /), list its children.
+    // Otherwise treat the basename as a partial prefix to filter siblings.
+    let (parent, partial) = if expanded.ends_with('/') || (path.is_dir() && expanded != "~") {
+        (path.to_path_buf(), String::new())
+    } else if let (Some(p), Some(n)) = (path.parent(), path.file_name()) {
+        (p.to_path_buf(), n.to_string_lossy().into_owned())
+    } else {
+        (Path::new(".").to_path_buf(), String::new())
+    };
+
+    let mut out: Vec<String> = match fs::read_dir(&parent) {
+        Ok(rd) => rd
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_type().map(|t| t.is_dir()).unwrap_or(false))
+            .filter_map(|e| e.file_name().into_string().ok())
+            .filter(|name| !name.starts_with('.') || partial.starts_with('.'))
+            .filter(|name| {
+                partial.is_empty() || name.to_lowercase().starts_with(&partial.to_lowercase())
+            })
+            .take(40)
+            .map(|name| {
+                let mut p = parent.clone();
+                p.push(name);
+                p.to_string_lossy().into_owned()
+            })
+            .collect(),
+        Err(_) => Vec::new(),
+    };
+    out.sort();
+    out
+}

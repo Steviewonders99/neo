@@ -35,6 +35,8 @@ pub struct PaneHandle {
     pub input_tx: mpsc::UnboundedSender<Vec<u8>>,
     pub detector: Arc<Mutex<ActivityDetector>>,
     pub alive: Arc<AtomicBool>,
+    pub kind: PaneKind,
+    pub summary_emitted: Arc<AtomicBool>,
 }
 
 #[derive(Default)]
@@ -109,6 +111,8 @@ pub async fn spawn_pane<R: Runtime>(
     let (input_tx, mut input_rx) = mpsc::unbounded_channel::<Vec<u8>>();
     let detector = Arc::new(Mutex::new(ActivityDetector::new()));
     let alive = Arc::new(AtomicBool::new(true));
+    let summary_emitted = Arc::new(AtomicBool::new(false));
+    let kind = req.kind;
 
     manager.insert(
         req.id.clone(),
@@ -119,6 +123,8 @@ pub async fn spawn_pane<R: Runtime>(
             input_tx,
             detector: detector.clone(),
             alive: alive.clone(),
+            kind,
+            summary_emitted: summary_emitted.clone(),
         },
     );
 
@@ -169,6 +175,8 @@ pub async fn spawn_pane<R: Runtime>(
     let app_t = app.clone();
     let det_t = detector.clone();
     let alive_t = alive.clone();
+    let summary_emitted_t = summary_emitted.clone();
+    let kind_t = kind;
     std::thread::spawn(move || {
         use std::sync::atomic::Ordering;
         while alive_t.load(Ordering::SeqCst) {
@@ -185,6 +193,25 @@ pub async fn spawn_pane<R: Runtime>(
                             notifier.inner().on_not_attention(&app_t, &id_t);
                         }
                     }
+                }
+
+                // Summarize Claude's first response on the first Working->Idle transition
+                if state == crate::activity::ActivityState::Idle
+                    && kind_t == PaneKind::Claude
+                    && !summary_emitted_t.swap(true, Ordering::SeqCst)
+                {
+                    let tail = det_t.lock().tail_text();
+                    let id_s = id_t.clone();
+                    let app_s = app_t.clone();
+                    tauri::async_runtime::spawn(async move {
+                        let title = crate::summarizer::summarize_task(&tail).await
+                            .or_else(|| crate::summarizer::heuristic_title(&tail));
+                        if let Some(t) = title {
+                            if !t.trim().is_empty() {
+                                let _ = app_s.emit(&format!("task_suggestion:{id_s}"), t);
+                            }
+                        }
+                    });
                 }
             }
         }
