@@ -15,9 +15,11 @@ type State = {
   renameTask(id: string, task: string): void
   openLauncher(): void
   closeLauncher(): void
+  addPane(args: AddPaneArgs): Promise<void>
+  removePane(id: string): Promise<void>
 }
 
-export const useStore = create<State>((set) => ({
+export const useStore = create<State>((set, get) => ({
   panes: [],
   focusedId: null,
   isLauncherOpen: false,
@@ -62,6 +64,43 @@ export const useStore = create<State>((set) => ({
 
   openLauncher: () => set({ isLauncherOpen: true }),
   closeLauncher: () => set({ isLauncherOpen: false }),
+
+  addPane: async (args) => {
+    if (get().panes.length >= 10) return
+    const pane = makePane(args)
+    set((s) => ({ panes: [...s.panes, pane], focusedId: pane.id }))
+    const { ipc } = await import('../lib/ipc')
+    try {
+      await ipc.spawn({
+        id: pane.id,
+        cwd: pane.cwd,
+        kind: pane.kind,
+        cols: 80,
+        rows: 24,
+      })
+    } catch (err) {
+      set((s) => ({
+        panes: s.panes.map((p) =>
+          p.id === pane.id ? { ...p, status: 'exited', exitCode: -1 } : p,
+        ),
+      }))
+      console.error('spawn failed', err)
+    }
+  },
+
+  removePane: async (id) => {
+    const { ipc } = await import('../lib/ipc')
+    try {
+      await ipc.kill(id)
+    } catch {
+      /* already dead */
+    }
+    set((s) => {
+      const panes = s.panes.filter((p) => p.id !== id)
+      const focusedId = s.focusedId === id ? (panes[0]?.id ?? null) : s.focusedId
+      return { panes, focusedId }
+    })
+  },
 }))
 
 export function makePane(args: AddPaneArgs): Pane {

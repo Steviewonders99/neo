@@ -118,3 +118,31 @@ body { color: var(--text); }
   0%, 100% { box-shadow: 0 0 8px rgba(57,255,20,0.45); }
   50% { box-shadow: 0 0 18px rgba(57,255,20,0.85); }
 }
+
+.grid-layout {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  min-height: 0;
+}
+.app-root { height: 100vh; display: flex; flex-direction: column; }
+.fab-new-pane {
+  position: fixed;
+  bottom: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border-focus);
+  background: rgba(57,255,20,0.18);
+  color: var(--green);
+  font-size: 22px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  text-shadow: var(--green-glow);
+  transition: transform 100ms ease;
+}
+.fab-new-pane:hover { transform: scale(1.06); }
+.fab-new-pane:disabled { opacity: 0.4; cursor: not-allowed; }
