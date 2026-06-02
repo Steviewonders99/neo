@@ -38,3 +38,10 @@ export function listenActivity(
 ): Promise<UnlistenFn> {
   return listen<PaneStatus>(`activity:${id}`, (e) => cb(e.payload))
 }
+
+export type RecentDir = { cwd: string; repo: string; lastUsedAt: number }
+
+export const recentDirs = {
+  list: () => invoke<RecentDir[]>('list_recent_dirs'),
+  add: (cwd: string) => invoke<RecentDir[]>('add_recent_dir', { cwd }),
+}

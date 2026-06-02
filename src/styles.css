@@ -146,3 +146,63 @@ body { color: var(--text); }
 }
 .fab-new-pane:hover { transform: scale(1.06); }
 .fab-new-pane:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.launcher-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 10;
+}
+.launcher {
+  background: var(--surface-chrome);
+  border: 1px solid var(--border-focus);
+  border-radius: 10px;
+  padding: 18px 20px;
+  width: 520px;
+  max-width: 90vw;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.launcher h2 { margin: 0 0 6px; color: var(--green); text-shadow: var(--green-glow); }
+.launcher label { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 6px; }
+.launcher input[type="text"], .launcher input:not([type]) {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 8px;
+  border-radius: 4px;
+  font: inherit;
+}
+.launcher-row { display: flex; gap: 8px; align-items: center; }
+.launcher-row input { flex: 1; }
+.launcher button {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+}
+.launcher button.primary {
+  background: rgba(57,255,20,0.22);
+  border-color: var(--border-focus);
+  color: var(--green);
+  text-shadow: var(--green-glow);
+}
+.launcher button:hover { border-color: var(--border-focus); }
+.launcher .radio { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.launcher-recents { display: flex; flex-direction: column; gap: 2px; max-height: 130px; overflow-y: auto; }
+.launcher-recent {
+  text-align: left;
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid transparent;
+}
+.launcher-recent:hover { background: rgba(57,255,20,0.08); }
+.launcher-recent .muted { color: var(--text-muted); font-size: 11px; margin-left: 8px; }
+.launcher-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.launcher-error { color: #ff5c57; font-size: 12px; }

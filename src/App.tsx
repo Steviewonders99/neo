@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { WindowChrome } from './components/WindowChrome'
 import { GridLayout } from './components/GridLayout'
+import { PaneLauncher } from './components/PaneLauncher'
 import { useStore } from './state/store'
 
 export default function App() {
@@ -28,6 +29,7 @@ export default function App() {
       >
         ＋
       </button>
+      <PaneLauncher />
     </div>
   )
 }
