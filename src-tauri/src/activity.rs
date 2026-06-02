@@ -49,3 +49,60 @@ mod tests {
         assert_eq!(tb.as_str(), "");
     }
 }
+
+use once_cell::sync::Lazy;
+use regex::RegexSet;
+
+static ATTENTION_PATTERNS: Lazy<RegexSet> = Lazy::new(|| {
+    RegexSet::new([
+        r"(?i)Do you want to proceed\?",
+        r"\(y/N\)\s*$",
+        r"\(y/n\)\s*$",
+        r"(?i)permission to (run|edit|write|read)",
+        r"\[y/n/a\]",
+        r"❯\s*$",
+    ])
+    .expect("valid regex set")
+});
+
+pub fn is_attention(tail: &str) -> bool {
+    ATTENTION_PATTERNS.is_match(tail.trim_end_matches(|c: char| c.is_whitespace() && c != '\n').trim_end())
+}
+
+#[cfg(test)]
+mod attention_tests {
+    use super::*;
+
+    #[test]
+    fn detects_do_you_want_to_proceed() {
+        assert!(is_attention("Some output\nDo you want to proceed?"));
+    }
+
+    #[test]
+    fn detects_y_n_prompt() {
+        assert!(is_attention("continue? (y/N) "));
+        assert!(is_attention("are you sure? (y/n)"));
+    }
+
+    #[test]
+    fn detects_permission_phrasing() {
+        assert!(is_attention("Claude needs permission to run rm -rf"));
+        assert!(is_attention("permission to edit file"));
+    }
+
+    #[test]
+    fn detects_y_n_a_choice() {
+        assert!(is_attention("approve? [y/n/a]"));
+    }
+
+    #[test]
+    fn detects_idle_prompt_arrow() {
+        assert!(is_attention("some stuff\n❯ "));
+    }
+
+    #[test]
+    fn ignores_normal_output() {
+        assert!(!is_attention("npm install completed"));
+        assert!(!is_attention("warning: foo"));
+    }
+}
