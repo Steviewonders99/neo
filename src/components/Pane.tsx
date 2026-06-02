@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useStore } from '../state/store'
-import { listenActivity } from '../lib/ipc'
+import { listenActivity, meta as paneMetaIpc } from '../lib/ipc'
 import type { Pane as PaneType } from '../state/types'
 import { PaneHeader } from './PaneHeader'
 import { Terminal } from './Terminal'
@@ -12,6 +12,12 @@ export function Pane({ pane, onClose }: Props) {
   const setFocus = useStore((s) => s.setFocus)
   const updateStatus = useStore((s) => s.updateStatus)
 
+  // Push meta whenever it changes so the Notifier has the latest title
+  useEffect(() => {
+    paneMetaIpc.set(pane.id, pane.repo, pane.task || 'untitled').catch(() => {})
+  }, [pane.id, pane.repo, pane.task])
+
+  // Listen for activity events
   useEffect(() => {
     let unsub: (() => void) | null = null
     listenActivity(pane.id, (status) => updateStatus(pane.id, status)).then(
@@ -32,8 +38,13 @@ export function Pane({ pane, onClose }: Props) {
     .filter(Boolean)
     .join(' ')
 
+  function onMouseDown() {
+    setFocus(pane.id)
+    paneMetaIpc.focus(pane.id).catch(() => {})
+  }
+
   return (
-    <div className={cls} onMouseDown={() => setFocus(pane.id)}>
+    <div className={cls} onMouseDown={onMouseDown}>
       <PaneHeader pane={pane} onClose={onClose} />
       <div className="pane-body">
         <Terminal paneId={pane.id} />

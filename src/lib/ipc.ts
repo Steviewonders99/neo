@@ -45,3 +45,9 @@ export const recentDirs = {
   list: () => invoke<RecentDir[]>('list_recent_dirs'),
   add: (cwd: string) => invoke<RecentDir[]>('add_recent_dir', { cwd }),
 }
+
+export const meta = {
+  set: (id: string, repo: string, task: string) =>
+    invoke<void>('set_pane_meta', { id, repo, task }),
+  focus: (id: string) => invoke<void>('pane_focus', { id }),
+}
