@@ -10,11 +10,19 @@
     "frontendDist": "../dist"
   },
   "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
-        "title": "terminal-panes",
-        "width": 800,
-        "height": 600
+        "title": "Terminal Panes",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 900,
+        "minHeight": 600,
+        "decorations": true,
+        "transparent": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "backgroundColor": "#00000000"
       }
     ],
     "security": {
