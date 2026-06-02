@@ -12,18 +12,6 @@ use notifier::Notifier;
 use pty::PtyManager;
 
 pub fn run() {
-    // Load .env from the project root (parent of src-tauri) so OPENROUTER_API_KEY
-    // and similar are visible to std::env::var(). Silently no-ops if absent.
-    if let Ok(mut cwd) = std::env::current_dir() {
-        // tauri dev runs with cwd = src-tauri/; .env lives one level up.
-        cwd.push(".env");
-        let _ = dotenvy::from_path(&cwd);
-        cwd.pop();
-        cwd.pop();
-        cwd.push(".env");
-        let _ = dotenvy::from_path(&cwd);
-    }
-
     let pty_manager = PtyManager::new();
     let notifier = Notifier::new();
 

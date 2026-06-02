@@ -204,8 +204,7 @@ pub async fn spawn_pane<R: Runtime>(
                     let id_s = id_t.clone();
                     let app_s = app_t.clone();
                     tauri::async_runtime::spawn(async move {
-                        let title = crate::summarizer::summarize_task(&tail).await
-                            .or_else(|| crate::summarizer::heuristic_title(&tail));
+                        let title = crate::summarizer::summarize_task(&tail);
                         if let Some(t) = title {
                             if !t.trim().is_empty() {
                                 let _ = app_s.emit(&format!("task_suggestion:{id_s}"), t);

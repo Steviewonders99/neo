@@ -313,35 +313,37 @@ body { color: var(--text); }
 
 /* Welcome / Matrix rain */
 .welcome {
-  flex: 1;
-  display: flex;
-  position: relative;
+  flex: 1 1 auto;
   min-height: 0;
-  overflow: hidden;
+  position: relative;
   background: #000;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
   -webkit-app-region: no-drag;
 }
 .matrix-rain {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: block;
   background: #000;
   pointer-events: none;
+  z-index: 0;
 }
 .welcome-overlay {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 14px;
-  /* Lighter vignette so the rain still reads through behind the title */
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.55) 75%);
-  padding: 24px;
-  box-sizing: border-box;
+  padding: 36px 24px;
+  text-align: center;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.0) 70%);
+  border-radius: 16px;
 }
 .welcome-title {
   font-family: var(--font-mono);
