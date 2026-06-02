@@ -106,3 +106,113 @@ mod attention_tests {
         assert!(!is_attention("warning: foo"));
     }
 }
+
+use std::time::{Duration, Instant};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ActivityState {
+    Starting,
+    Working,
+    Idle,
+    Attention,
+}
+
+pub struct ActivityDetector {
+    tail: TailBuffer,
+    state: ActivityState,
+    last_output: Instant,
+    silence_threshold: Duration,
+}
+
+impl ActivityDetector {
+    pub fn new() -> Self {
+        Self {
+            tail: TailBuffer::new(4096),
+            state: ActivityState::Starting,
+            last_output: Instant::now(),
+            silence_threshold: Duration::from_millis(800),
+        }
+    }
+
+    /// Call when bytes arrive on the PTY. Returns the new state if it changed.
+    pub fn on_output(&mut self, chunk: &[u8]) -> Option<ActivityState> {
+        self.tail.push(chunk);
+        self.last_output = Instant::now();
+        self.set(ActivityState::Working)
+    }
+
+    /// Call periodically (e.g. every 250 ms). Returns the new state if it changed.
+    pub fn tick(&mut self) -> Option<ActivityState> {
+        if self.state == ActivityState::Working
+            && self.last_output.elapsed() >= self.silence_threshold
+        {
+            let next = if is_attention(&self.tail.as_str()) {
+                ActivityState::Attention
+            } else {
+                ActivityState::Idle
+            };
+            return self.set(next);
+        }
+        None
+    }
+
+    fn set(&mut self, next: ActivityState) -> Option<ActivityState> {
+        if self.state == next {
+            None
+        } else {
+            self.state = next;
+            Some(next)
+        }
+    }
+
+    pub fn state(&self) -> ActivityState {
+        self.state
+    }
+}
+
+#[cfg(test)]
+mod state_machine_tests {
+    use super::*;
+    use std::thread::sleep;
+
+    #[test]
+    fn output_transitions_to_working() {
+        let mut d = ActivityDetector::new();
+        assert_eq!(d.on_output(b"some output"), Some(ActivityState::Working));
+        assert_eq!(d.state(), ActivityState::Working);
+    }
+
+    #[test]
+    fn no_double_emit_when_already_working() {
+        let mut d = ActivityDetector::new();
+        d.on_output(b"a");
+        assert_eq!(d.on_output(b"b"), None);
+    }
+
+    #[test]
+    fn silence_with_normal_tail_goes_idle() {
+        let mut d = ActivityDetector::new();
+        d.silence_threshold = Duration::from_millis(20);
+        d.on_output(b"build complete\n");
+        sleep(Duration::from_millis(40));
+        assert_eq!(d.tick(), Some(ActivityState::Idle));
+    }
+
+    #[test]
+    fn silence_with_attention_tail_goes_attention() {
+        let mut d = ActivityDetector::new();
+        d.silence_threshold = Duration::from_millis(20);
+        d.on_output(b"Run command? (y/N) ");
+        sleep(Duration::from_millis(40));
+        assert_eq!(d.tick(), Some(ActivityState::Attention));
+    }
+
+    #[test]
+    fn tick_before_silence_returns_none() {
+        let mut d = ActivityDetector::new();
+        d.silence_threshold = Duration::from_secs(10);
+        d.on_output(b"x");
+        assert_eq!(d.tick(), None);
+    }
+}
