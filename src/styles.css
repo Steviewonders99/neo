@@ -6,14 +6,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
   align-items: stretch;
   height: 32px;
   user-select: none;
+  -webkit-app-region: drag;
+  -webkit-user-select: none;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 5;
 }
 .window-chrome-traffic-light-spacer {
   width: 80px;
   flex-shrink: 0;
+  -webkit-app-region: drag;
 }
 .window-chrome-drag {
   flex: 1;
   -webkit-app-region: drag;
+}
+/* Allow clicks/typing inside terminals and inputs to take precedence over drag */
+.pane, .launcher, .fab-new-pane, input, button {
+  -webkit-app-region: no-drag;
 }
 
 :root {
