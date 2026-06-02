@@ -6,13 +6,13 @@
   "description": "Native macOS Tauri 2 app for running up to 10 Claude Code (or shell) sessions in parallel — frosted glass + matrix-green phosphor terminals with per-pane activity awareness.",
   "license": "MIT",
   "author": "Steven Junop <stevenjunop@gmail.com>",
-  "homepage": "https://github.com/stevenjunop/neo",
+  "homepage": "https://github.com/Steviewonders99/neo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/stevenjunop/neo.git"
+    "url": "https://github.com/Steviewonders99/neo.git"
   },
   "bugs": {
-    "url": "https://github.com/stevenjunop/neo/issues"
+    "url": "https://github.com/Steviewonders99/neo/issues"
   },
   "keywords": [
     "tauri",

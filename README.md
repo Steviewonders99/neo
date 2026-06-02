@@ -45,7 +45,7 @@ NEO is built for that exact workflow:
 ## Quick start
 
 ```bash
-git clone https://github.com/stevenjunop/neo.git
+git clone https://github.com/Steviewonders99/neo.git
 cd neo
 npm install
 npm run tauri dev
