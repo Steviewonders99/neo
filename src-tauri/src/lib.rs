@@ -1,3 +1,4 @@
+mod activity;
 mod commands;
 mod pty;
 mod window;
