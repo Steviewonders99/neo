@@ -1,3 +1,4 @@
+mod commands;
 mod pty;
 mod window;
 
@@ -15,6 +16,12 @@ pub fn run() {
             window::configure_main_window(&app.handle())?;
             Ok(())
         })
+        .invoke_handler(tauri::generate_handler![
+            commands::pane_spawn,
+            commands::pane_write,
+            commands::pane_resize,
+            commands::pane_kill,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
