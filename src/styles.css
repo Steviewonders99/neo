@@ -15,3 +15,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
   flex: 1;
   -webkit-app-region: drag;
 }
+
+:root {
+  --green: #39FF14;
+  --green-dim: #27B30E;
+  --green-soft: #1B6E07;
+  --green-glow: 0 0 6px rgba(57, 255, 20, 0.55);
+
+  --surface-chrome: rgba(20, 22, 20, 0.45);
+  --surface-terminal: rgba(0, 12, 0, 0.55);
+
+  --border: rgba(57, 255, 20, 0.20);
+  --border-focus: rgba(57, 255, 20, 0.75);
+  --border-attn: rgba(57, 255, 20, 1.00);
+
+  --text: rgba(220, 230, 220, 0.92);
+  --text-muted: rgba(160, 175, 160, 0.65);
+
+  --font-mono: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  --font-ui: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body { color: var(--text); }
