@@ -83,7 +83,7 @@ pub fn open_pty(size: PtySize) -> portable_pty::PtyPair {
 }
 
 use std::io::Read;
-use tauri::{AppHandle, Emitter, Runtime};
+use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 pub async fn spawn_pane<R: Runtime>(
     app: AppHandle<R>,
@@ -170,11 +170,22 @@ pub async fn spawn_pane<R: Runtime>(
     let det_t = detector.clone();
     let alive_t = alive.clone();
     std::thread::spawn(move || {
+        use std::sync::atomic::Ordering;
         while alive_t.load(Ordering::SeqCst) {
             std::thread::sleep(std::time::Duration::from_millis(250));
             let changed = det_t.lock().tick();
             if let Some(state) = changed {
                 let _ = app_t.emit(&format!("activity:{id_t}"), state);
+                if let Some(notifier) = app_t.try_state::<Arc<crate::notifier::Notifier>>() {
+                    match state {
+                        crate::activity::ActivityState::Attention => {
+                            notifier.inner().on_attention(&app_t, &id_t);
+                        }
+                        _ => {
+                            notifier.inner().on_not_attention(&app_t, &id_t);
+                        }
+                    }
+                }
             }
         }
     });

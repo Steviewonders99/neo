@@ -50,3 +50,20 @@ pub fn list_recent_dirs() -> Vec<RecentDir> {
 pub fn add_recent_dir(cwd: String) -> Vec<RecentDir> {
     recents::add(&cwd)
 }
+
+use crate::notifier::{Notifier, PaneMeta};
+
+#[tauri::command]
+pub fn set_pane_meta(
+    notifier: State<'_, Arc<Notifier>>,
+    id: String,
+    repo: String,
+    task: String,
+) {
+    notifier.set_meta(id, PaneMeta { repo, task });
+}
+
+#[tauri::command]
+pub fn pane_focus(notifier: State<'_, Arc<Notifier>>, app: AppHandle, id: String) {
+    notifier.on_not_attention(&app, &id);
+}
