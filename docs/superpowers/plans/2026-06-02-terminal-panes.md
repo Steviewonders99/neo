@@ -165,7 +165,7 @@ git commit -m "Scaffold Tauri 2 + React + Vite + TS"
 Append to the `[dependencies]` table:
 
 ```toml
-tauri-plugin-window-vibrancy = "0.5"
+window-vibrancy = "0.7"
 tauri-plugin-notification = "2"
 portable-pty = "0.8"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "io-util", "time"] }
@@ -313,7 +313,7 @@ git commit -m "Configure window: transparent, overlay title bar, no title"
 use tauri::{WebviewWindow, Manager, Runtime};
 
 #[cfg(target_os = "macos")]
-use tauri_plugin_window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 
 pub fn apply_macos_vibrancy<R: Runtime>(window: &WebviewWindow<R>) -> tauri::Result<()> {
     #[cfg(target_os = "macos")]
