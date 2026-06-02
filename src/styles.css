@@ -314,7 +314,10 @@ body { color: var(--text); }
 /* Welcome / Matrix rain */
 .welcome {
   flex: 1 1 auto;
-  min-height: 0;
+  /* Failsafe: if the flex chain collapses, this guarantees the welcome
+     still occupies the area below the 38px chrome strip. Tested with both
+     flex-working and flex-broken layouts. */
+  min-height: calc(100vh - 38px);
   position: relative;
   background: #000;
   overflow: hidden;
