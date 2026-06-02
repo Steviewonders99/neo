@@ -53,3 +53,68 @@ body { color: var(--text); }
 .terminal-mount .xterm-rows {
   text-shadow: var(--green-glow);
 }
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-chrome);
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+  transition: border-color 120ms ease;
+}
+.pane.focused { border-color: var(--border-focus); }
+.pane.status-working.focused .pane-body { animation: breathe 1.2s ease-in-out infinite; }
+.pane.status-attention { border-color: var(--border-attn); box-shadow: 0 0 12px rgba(57,255,20,0.35); }
+.pane.status-attention.unread { animation: attn-pulse 600ms ease-in-out infinite; }
+.pane.status-exited { opacity: 0.7; }
+.pane.status-exited .pane-repo,
+.pane.status-exited .pane-task { text-decoration: line-through; }
+
+.pane-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  background: rgba(0,0,0,0.18);
+  border-bottom: 1px solid var(--border);
+  user-select: none;
+}
+.pane-status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  box-shadow: 0 0 5px currentColor;
+}
+.pane-repo { color: var(--green); font-weight: 600; }
+.pane-sep { color: var(--text-muted); }
+.pane-task { color: var(--text); cursor: text; }
+.pane-task .placeholder { color: var(--text-muted); font-style: italic; }
+.pane-task-input {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border-focus);
+  color: var(--text);
+  font: inherit;
+  padding: 1px 6px;
+  border-radius: 3px;
+  outline: none;
+}
+.pane-spacer { flex: 1; }
+.pane-exit-code { color: var(--text-muted); font-size: 11px; }
+.pane-close {
+  background: transparent; border: none; color: var(--text-muted); font-size: 16px;
+  cursor: pointer; padding: 0 4px; line-height: 1;
+}
+.pane-close:hover { color: var(--green); }
+.pane-body { flex: 1; min-height: 0; }
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+@keyframes attn-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(57,255,20,0.45); }
+  50% { box-shadow: 0 0 18px rgba(57,255,20,0.85); }
+}
