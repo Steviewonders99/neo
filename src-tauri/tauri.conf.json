@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "terminal-panes",
+  "productName": "NEO",
   "version": "0.1.0",
   "identifier": "com.junop.terminalpanes",
   "build": {
@@ -13,7 +13,7 @@
     "macOSPrivateApi": true,
     "windows": [
       {
-        "title": "Terminal Panes",
+        "title": "NEO",
         "width": 1400,
         "height": 900,
         "minWidth": 900,

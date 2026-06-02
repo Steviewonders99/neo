@@ -1,6 +1,6 @@
-# Terminal Panes
+# NEO
 
-Native macOS Tauri 2 app for running 1–10 Claude Code (or shell) sessions in parallel inside a single frosted-glass window. Matrix-green phosphor terminals. Per-pane activity awareness — know exactly which Claude is waiting on you.
+Native macOS Tauri 2 app for running 1–10 Claude Code (or shell) sessions in parallel inside a single frosted-glass window. Matrix-green phosphor terminals. Per-pane activity awareness — know exactly which Claude is waiting on you. Repo context auto-attached on spawn. Task titles auto-generated via OpenRouter.
 
 ## Dev
 

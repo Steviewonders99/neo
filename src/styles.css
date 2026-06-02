@@ -305,3 +305,63 @@ body { color: var(--text); }
   background: rgba(57, 255, 20, 0.15);
   color: var(--green);
 }
+
+/* Welcome / Matrix rain */
+.welcome {
+  flex: 1;
+  position: relative;
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  text-align: left;
+  -webkit-app-region: no-drag;
+}
+.matrix-rain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #000;
+}
+.welcome-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  pointer-events: none;
+  /* Subtle dark vignette so the title pops over the rain */
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.35), rgba(0,0,0,0.85) 70%);
+}
+.welcome-title {
+  font-family: var(--font-mono);
+  font-size: 96px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  margin: 0;
+  color: var(--green);
+  text-shadow: 0 0 14px rgba(57,255,20,0.65), 0 0 36px rgba(57,255,20,0.35);
+  user-select: none;
+}
+.welcome-sub {
+  font-family: var(--font-mono);
+  color: var(--green-dim);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  margin: 0;
+  text-transform: lowercase;
+  text-shadow: var(--green-glow);
+  opacity: 0.85;
+  animation: welcome-blink 1.6s ease-in-out infinite;
+}
+@keyframes welcome-blink {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.45; }
+}
