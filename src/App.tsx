@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { WindowChrome } from './components/WindowChrome'
 import { GridLayout } from './components/GridLayout'
 import { PaneLauncher } from './components/PaneLauncher'
+import { MinimizedDock } from './components/MinimizedDock'
 import { useStore } from './state/store'
 
 export default function App() {
@@ -9,10 +10,9 @@ export default function App() {
   const addPane = useStore((s) => s.addPane)
   const openLauncher = useStore((s) => s.openLauncher)
 
-  // Boot with one default shell pane in home dir (Task 22 will replace this with the launcher flow)
   useEffect(() => {
     if (panes.length === 0) {
-      addPane({ cwd: '/Users/stevenjunop', task: 'new session', kind: 'shell' })
+      addPane({ cwd: '/Users/stevenjunop', task: '', kind: 'shell' })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -20,6 +20,7 @@ export default function App() {
   return (
     <div className="app-root">
       <WindowChrome />
+      <MinimizedDock />
       <GridLayout />
       <button
         className="fab-new-pane"

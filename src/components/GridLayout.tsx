@@ -5,7 +5,8 @@ import { Pane } from './Pane'
 export function GridLayout() {
   const panes = useStore((s) => s.panes)
   const removePane = useStore((s) => s.removePane)
-  const spec = gridForCount(panes.length)
+  const visible = panes.filter((p) => !p.minimized)
+  const spec = gridForCount(visible.length)
 
   return (
     <div
@@ -15,7 +16,7 @@ export function GridLayout() {
         gridTemplateRows: spec.rows,
       }}
     >
-      {panes.map((p) => (
+      {visible.map((p) => (
         <Pane key={p.id} pane={p} onClose={() => removePane(p.id)} />
       ))}
     </div>

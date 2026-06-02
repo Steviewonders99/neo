@@ -6,6 +6,7 @@ type Props = { pane: Pane; onClose: () => void }
 
 export function PaneHeader({ pane, onClose }: Props) {
   const renameTask = useStore((s) => s.renameTask)
+  const toggleMinimize = useStore((s) => s.toggleMinimize)
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(pane.task)
 
@@ -59,6 +60,17 @@ export function PaneHeader({ pane, onClose }: Props) {
       {pane.status === 'exited' && (
         <span className="pane-exit-code">exit {pane.exitCode ?? '?'}</span>
       )}
+      <button
+        className="pane-minimize"
+        onClick={(e) => {
+          e.stopPropagation()
+          toggleMinimize(pane.id)
+        }}
+        aria-label="minimize pane"
+        title="Archive — keeps PTY alive"
+      >
+        −
+      </button>
       <button className="pane-close" onClick={onClose} aria-label="close pane">
         ×
       </button>

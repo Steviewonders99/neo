@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useStore } from '../state/store'
-import { listenActivity, meta as paneMetaIpc } from '../lib/ipc'
+import { listenActivity, listenTaskSuggestion, meta as paneMetaIpc } from '../lib/ipc'
 import type { Pane as PaneType } from '../state/types'
 import { PaneHeader } from './PaneHeader'
 import { Terminal } from './Terminal'
@@ -11,8 +11,9 @@ export function Pane({ pane, onClose }: Props) {
   const focusedId = useStore((s) => s.focusedId)
   const setFocus = useStore((s) => s.setFocus)
   const updateStatus = useStore((s) => s.updateStatus)
+  const renameTask = useStore((s) => s.renameTask)
 
-  // Push meta whenever it changes so the Notifier has the latest title
+  // Sync meta whenever it changes
   useEffect(() => {
     paneMetaIpc.set(pane.id, pane.repo, pane.task || 'untitled').catch(() => {})
   }, [pane.id, pane.repo, pane.task])
@@ -27,6 +28,20 @@ export function Pane({ pane, onClose }: Props) {
       unsub?.()
     }
   }, [pane.id, updateStatus])
+
+  // Listen for auto-generated task title — but only apply if task is still empty/untitled
+  useEffect(() => {
+    let unsub: (() => void) | null = null
+    listenTaskSuggestion(pane.id, (title) => {
+      const current = useStore.getState().panes.find((p) => p.id === pane.id)
+      if (current && !current.task.trim()) {
+        renameTask(pane.id, title)
+      }
+    }).then((u) => (unsub = u))
+    return () => {
+      unsub?.()
+    }
+  }, [pane.id, renameTask])
 
   const isFocused = focusedId === pane.id
   const cls = [

@@ -10,6 +10,7 @@ export type Pane = {
   status: PaneStatus
   unread: boolean
   exitCode: number | null
+  minimized: boolean
 }
 
 export type AddPaneArgs = {

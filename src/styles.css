@@ -216,3 +216,92 @@ body { color: var(--text); }
 .launcher-recent .muted { color: var(--text-muted); font-size: 11px; margin-left: 8px; }
 .launcher-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 .launcher-error { color: #ff5c57; font-size: 12px; }
+
+/* Minimize button in pane header */
+.pane-minimize {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+.pane-minimize:hover { color: var(--green); }
+
+/* Minimized dock */
+.minimized-dock {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.minimized-dock-label {
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.minimized-chip {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2px 10px;
+  font: inherit;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 240px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.minimized-chip:hover { border-color: var(--border-focus); color: var(--green); }
+.minimized-chip.status-attention,
+.minimized-chip.unread { border-color: var(--border-attn); box-shadow: 0 0 6px rgba(57,255,20,0.45); }
+.minimized-chip-repo { color: var(--green); font-weight: 600; }
+.minimized-chip-task { color: var(--text-muted); }
+
+/* Launcher autocomplete dropdown */
+.launcher-cwd-row .launcher-cwd-wrap {
+  position: relative;
+  flex: 1;
+}
+.launcher-cwd-wrap input { width: 100%; box-sizing: border-box; }
+.launcher-completions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(15, 20, 15, 0.95);
+  border: 1px solid var(--border-focus);
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 12;
+  border-radius: 0 0 4px 4px;
+  backdrop-filter: blur(8px);
+}
+.launcher-completion {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  padding: 4px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+.launcher-completion:hover,
+.launcher-completion.highlighted {
+  background: rgba(57, 255, 20, 0.15);
+  color: var(--green);
+}

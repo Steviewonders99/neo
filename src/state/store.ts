@@ -10,6 +10,7 @@ type State = {
   insertPane(pane: Pane): void
   removePaneLocal(id: string): void
   setFocus(id: string): void
+  toggleMinimize(id: string): void
   updateStatus(id: string, status: PaneStatus): void
   setExitCode(id: string, code: number | null): void
   renameTask(id: string, task: string): void
@@ -39,6 +40,20 @@ export const useStore = create<State>((set, get) => ({
       focusedId: id,
       panes: s.panes.map((p) => (p.id === id ? { ...p, unread: false } : p)),
     })),
+
+  toggleMinimize: (id) =>
+    set((s) => {
+      const panes = s.panes.map((p) =>
+        p.id === id ? { ...p, minimized: !p.minimized } : p,
+      )
+      // When minimizing the focused pane, move focus to the next visible one
+      let focusedId = s.focusedId
+      const target = panes.find((p) => p.id === id)
+      if (target?.minimized && s.focusedId === id) {
+        focusedId = panes.find((p) => !p.minimized)?.id ?? null
+      }
+      return { panes, focusedId }
+    }),
 
   updateStatus: (id, status) =>
     set((s) => ({
@@ -114,5 +129,6 @@ export function makePane(args: AddPaneArgs): Pane {
     status: 'starting',
     unread: false,
     exitCode: null,
+    minimized: false,
   }
 }
