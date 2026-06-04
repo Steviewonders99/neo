@@ -1,9 +1,9 @@
 {
   "name": "neo",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
-  "description": "Native macOS Tauri 2 app for running up to 10 Claude Code (or shell) sessions in parallel — frosted glass + matrix-green phosphor terminals with per-pane activity awareness.",
+  "description": "Native macOS Tauri 2 app for running up to 10 Claude Code (or shell) sessions in parallel — frosted glass + auto-tiled panes with repo context auto-injection.",
   "license": "MIT",
   "author": "Steven Junop <stevenjunop@gmail.com>",
   "homepage": "https://github.com/Steviewonders99/neo",

@@ -8,7 +8,7 @@ use portable_pty::{native_pty_system, CommandBuilder, PtySize};
 use serde::{Deserialize, Serialize};
 use tokio::sync::mpsc;
 
-use crate::activity::{ActivityDetector, ActivityState};
+use crate::activity::ActivityDetector;
 
 pub type PaneId = String;
 
@@ -131,7 +131,6 @@ pub async fn spawn_pane<R: Runtime>(
     // Reader thread
     let id_r = req.id.clone();
     let app_r = app.clone();
-    let det_r = detector.clone();
     let alive_r = alive.clone();
     std::thread::spawn(move || {
         let mut buf = [0u8; 4096];
@@ -140,11 +139,6 @@ pub async fn spawn_pane<R: Runtime>(
                 Ok(0) => break,
                 Ok(n) => {
                     let chunk = buf[..n].to_vec();
-                    // Activity hook
-                    let changed = det_r.lock().on_output(&chunk);
-                    if let Some(state) = changed {
-                        let _ = app_r.emit(&format!("activity:{id_r}"), state);
-                    }
                     let _ = app_r.emit(&format!("pty:data:{id_r}"), chunk);
                 }
                 Err(_) => break,
@@ -166,52 +160,6 @@ pub async fn spawn_pane<R: Runtime>(
                 let _ = handle.master_writer.flush();
             } else {
                 break;
-            }
-        }
-    });
-
-    // Ticker thread — drives the silence-window check
-    let id_t = req.id.clone();
-    let app_t = app.clone();
-    let det_t = detector.clone();
-    let alive_t = alive.clone();
-    let summary_emitted_t = summary_emitted.clone();
-    let kind_t = kind;
-    std::thread::spawn(move || {
-        use std::sync::atomic::Ordering;
-        while alive_t.load(Ordering::SeqCst) {
-            std::thread::sleep(std::time::Duration::from_millis(250));
-            let changed = det_t.lock().tick();
-            if let Some(state) = changed {
-                let _ = app_t.emit(&format!("activity:{id_t}"), state);
-                if let Some(notifier) = app_t.try_state::<Arc<crate::notifier::Notifier>>() {
-                    match state {
-                        crate::activity::ActivityState::Attention => {
-                            notifier.inner().on_attention(&app_t, &id_t);
-                        }
-                        _ => {
-                            notifier.inner().on_not_attention(&app_t, &id_t);
-                        }
-                    }
-                }
-
-                // Summarize Claude's first response on the first Working->Idle transition
-                if state == crate::activity::ActivityState::Idle
-                    && kind_t == PaneKind::Claude
-                    && !summary_emitted_t.swap(true, Ordering::SeqCst)
-                {
-                    let tail = det_t.lock().tail_text();
-                    let id_s = id_t.clone();
-                    let app_s = app_t.clone();
-                    tauri::async_runtime::spawn(async move {
-                        let title = crate::summarizer::summarize_task(&tail);
-                        if let Some(t) = title {
-                            if !t.trim().is_empty() {
-                                let _ = app_s.emit(&format!("task_suggestion:{id_s}"), t);
-                            }
-                        }
-                    });
-                }
             }
         }
     });

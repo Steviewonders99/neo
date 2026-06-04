@@ -1,6 +1,6 @@
 [package]
 name = "neo"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Native macOS app for running up to 10 Claude Code sessions in parallel."
 license = "MIT"

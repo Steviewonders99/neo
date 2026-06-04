@@ -4,6 +4,21 @@ All notable changes to NEO are documented in this file. Format follows [Keep a C
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-06-04
+
+Visual + behavioral simplification based on real-world use of v0.1.0.
+
+### Changed
+- Switched xterm.js palette from matrix-green phosphor to a neutral VS Code–style palette on solid black — easier on the eyes across long sessions.
+- Pane styling reverted to a single, calm border state.
+
+### Removed
+- Per-pane activity awareness (working / idle / attention transitions, border pulse, glow text-shadow).
+- Auto-generated task titles from Claude's first response.
+- Attention-state macOS notifications and the dock badge counter that depended on activity transitions.
+
+The underlying `activity.rs` detector remains in the codebase but is no longer wired to the event stream — kept for anyone who wants to reintroduce activity-driven UX in a follow-up.
+
 ## [0.1.0] — 2026-06-02
 
 First public release.
