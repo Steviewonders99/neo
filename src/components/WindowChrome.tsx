@@ -30,7 +30,11 @@ export function WindowChrome() {
         onMouseDown={startDrag}
         data-tauri-drag-region
       >
-        <span className="window-chrome-title">NEO</span>
+        {/* ネオ — how Neo is written in Japanese. aria-label keeps the app
+            name readable to assistive tech and anyone who doesn't read kana. */}
+        <span className="window-chrome-title" lang="ja" aria-label="NEO">
+          ネオ
+        </span>
       </div>
     </div>
   )

@@ -71,10 +71,23 @@ pub fn build_command(kind: PaneKind, cwd: &str) -> CommandBuilder {
         cmd.arg("claude");
     }
     cmd.cwd(cwd);
-    // Preserve key env vars
+    // Preserve key env vars. COLORTERM is dropped rather than copied — it is
+    // what advertises truecolor support, and truecolor SGR sequences bypass
+    // xterm's 16-colour palette entirely.
     for (k, v) in std::env::vars() {
+        if k == "COLORTERM" {
+            continue;
+        }
         cmd.env(k, v);
     }
+    // NEO renders every pane monochrome white, so ask tools not to emit colour
+    // in the first place. Set after the copy loop so these always win.
+    //   NO_COLOR     the cross-language convention (chalk, ink, ripgrep, ...)
+    //   FORCE_COLOR  Node's explicit off switch, overrides chalk's own probing
+    //   CLICOLOR     BSD coreutils on macOS (ls and friends)
+    cmd.env("NO_COLOR", "1");
+    cmd.env("FORCE_COLOR", "0");
+    cmd.env("CLICOLOR", "0");
     cmd
 }
 

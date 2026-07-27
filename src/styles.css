@@ -21,8 +21,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
 }
 .window-chrome:active { cursor: grabbing; }
 .window-chrome-title {
-  font-family: var(--font-mono);
-  font-size: 11px;
+  /* Explicit CJK fallback — the mono stack has no katakana coverage, and
+     without this the browser picks an arbitrary fallback face for ネオ. */
+  font-family: var(--font-mono), 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 12px;
   font-weight: 600;
   color: var(--green);
   letter-spacing: 0.35em;
@@ -75,6 +77,12 @@ body { color: var(--text); }
   background: #000;
   padding: 6px 8px;
   box-sizing: border-box;
+  /* Last line of defence for the all-white rule. NO_COLOR (pty.rs) stops most
+     tools emitting colour and xtermTheme flattens the 16-colour range, but
+     256-colour and truecolour sequences bypass the palette — this strips the
+     hue off anything that still slips through. Scoped to the terminal so the
+     green NEO chrome around it is untouched. */
+  filter: grayscale(1);
 }
 
 .pane {

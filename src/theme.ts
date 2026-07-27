@@ -18,26 +18,42 @@ export const theme = {
   fontUI: '-apple-system, BlinkMacSystemFont, sans-serif',
 } as const
 
+/**
+ * Monochrome terminal palette — every ANSI colour collapses onto a white ramp.
+ *
+ * Claude Code leans hard on colour, and across long sessions the hue is noise
+ * rather than signal. Rather than flattening everything to pure #ffffff, the
+ * ramp keeps three steps so dim/secondary text stays quieter than primary and
+ * the output retains its hierarchy. Hue is gone; contrast is not.
+ *
+ * This only covers the legacy 16-colour range. 256-colour and truecolour
+ * sequences bypass it entirely — those are handled by NO_COLOR in pty.rs and,
+ * as a last resort, the grayscale filter on .terminal-mount.
+ */
+const WHITE = '#ffffff' // bright variants
+const WHITE_DIM = '#e5e5e5' // normal variants, and the default foreground
+const GREY = '#8a8a8a' // dim / brightBlack — comments, secondary text
+
 export const xtermTheme = {
   background: '#000000',
-  foreground: '#e5e5e5',
-  cursor: '#e5e5e5',
+  foreground: WHITE_DIM,
+  cursor: WHITE_DIM,
   cursorAccent: '#000000',
   selectionBackground: 'rgba(255,255,255,0.25)',
   black: '#000000',
-  red: '#cd3131',
-  green: '#0dbc79',
-  yellow: '#e5e510',
-  blue: '#2472c8',
-  magenta: '#bc3fbc',
-  cyan: '#11a8cd',
-  white: '#e5e5e5',
-  brightBlack: '#666666',
-  brightRed: '#f14c4c',
-  brightGreen: '#23d18b',
-  brightYellow: '#f5f543',
-  brightBlue: '#3b8eea',
-  brightMagenta: '#d670d6',
-  brightCyan: '#29b8db',
-  brightWhite: '#ffffff',
+  red: WHITE_DIM,
+  green: WHITE_DIM,
+  yellow: WHITE_DIM,
+  blue: WHITE_DIM,
+  magenta: WHITE_DIM,
+  cyan: WHITE_DIM,
+  white: WHITE_DIM,
+  brightBlack: GREY,
+  brightRed: WHITE,
+  brightGreen: WHITE,
+  brightYellow: WHITE,
+  brightBlue: WHITE,
+  brightMagenta: WHITE,
+  brightCyan: WHITE,
+  brightWhite: WHITE,
 } as const
