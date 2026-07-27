@@ -145,11 +145,50 @@ the rain animation. Adding it to `GLYPHS` was offered and declined for now.
 
 ---
 
+## E. Resizable panes
+
+Added after the initial approval. Resizing is done with **draggable gutters**, not per-pane
+free resize: the tiled grid is kept, so panes stay gapless and can never overlap or drift
+off-screen, and the drag-to-reorder work above continues to apply unchanged.
+
+### Layout
+
+Grid spacing moves from `gap: 8px` to real 8px gutter *tracks*, which is what makes the gaps
+grabbable. The template becomes `1fr 8px 1fr 8px 1fr`; panes are placed explicitly on the odd
+lines (cell *n* → line `2n + 1`) rather than auto-flowing, since auto-flow would drop panes
+into the gutter tracks.
+
+Gutters are rendered **one segment per adjacent cell**, not as a single full-span strip. A
+full-span column gutter and a full-span row gutter overlap where they cross — dead centre of
+a 2×2 grid — and whichever renders last swallows the other's grab target. Segmenting leaves
+the intersections empty so every gutter is grabbable along its whole length. All segments of
+one gutter share an index, so dragging any of them resizes the entire column or row.
+
+### Core: `src/lib/tracks.ts`
+
+Tracks are held as unitless fractions and rendered as `fr`. `resizeTracks` trades size between
+the dragged pair only, preserving the total, and clamps both sides at `MIN_TRACK_FR = 0.15`.
+Double-clicking a gutter resets that axis to `evenTracks`. Changing pane count changes the
+tiling shape, so tracks reset to even whenever the shape changes.
+
+Because tracks are `fr`, pane proportions survive an OS window resize for free — the browser
+rescales the tracks and xterm refits from its ResizeObserver. The window itself is only ever
+resized by the user.
+
+### Performance
+
+Mid-drag the grid template is written straight to the DOM; routing it through React state
+would re-render every pane and refit every xterm each frame. `Terminal.tsx`'s ResizeObserver
+is coalesced to one fit per animation frame for the same reason — otherwise a gutter drag
+fires a resize IPC call per observation.
+
+---
+
 ## Out of scope
 
 Keyboard reorder shortcuts · dragging panes into or out of the dock · reordering dock chips ·
-persisting pane order across restarts · free-form pane resize · rounding the app UI (the
-rounding request applies to the icon only) · adding `角` to the rain's `GLYPHS`.
+persisting pane order and sizes across restarts · free-form floating panes · rounding the app
+UI (the rounding request applies to the icon only) · adding `角` to the rain's `GLYPHS`.
 
 ---
 

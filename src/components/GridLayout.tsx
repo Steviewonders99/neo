@@ -95,33 +95,48 @@ export function GridLayout() {
           />
         ))}
 
-        {Array.from({ length: Math.max(0, cols - 1) }, (_, c) => (
-          <div
-            key={`col-gutter-${c}`}
-            className="grid-gutter grid-gutter-col"
-            style={{ gridColumn: 2 * (c + 1), gridRow: '1 / -1' }}
-            onPointerDown={(e) => startGutterDrag(e, 'col', c)}
-            onDoubleClick={() => setColFr(evenTracks(cols))}
-            role="separator"
-            aria-orientation="vertical"
-            aria-label={`Resize columns ${c + 1} and ${c + 2}`}
-            title="Drag to resize · double-click to reset"
-          />
-        ))}
+        {/*
+          Gutters are rendered one segment per adjacent cell rather than as a
+          single full-span strip. A full-span column gutter and a full-span row
+          gutter would overlap where they cross — dead centre of a 2x2 grid —
+          and whichever rendered last would swallow the other's grab target.
+          Segmenting leaves the intersections empty, so every gutter is
+          grabbable along its whole length. All segments of one gutter share an
+          index, so dragging any of them resizes the entire column or row.
+        */}
+        {Array.from({ length: Math.max(0, cols - 1) }, (_, c) =>
+          Array.from({ length: rows }, (_, r) => (
+            <div
+              key={`col-gutter-${c}-${r}`}
+              className="grid-gutter grid-gutter-col"
+              style={{ gridColumn: 2 * (c + 1), gridRow: 2 * r + 1 }}
+              onPointerDown={(e) => startGutterDrag(e, 'col', c)}
+              onDoubleClick={() => setColFr(evenTracks(cols))}
+              role={r === 0 ? 'separator' : undefined}
+              aria-orientation={r === 0 ? 'vertical' : undefined}
+              aria-label={r === 0 ? `Resize columns ${c + 1} and ${c + 2}` : undefined}
+              aria-hidden={r === 0 ? undefined : true}
+              title="Drag to resize · double-click to reset"
+            />
+          )),
+        )}
 
-        {Array.from({ length: Math.max(0, rows - 1) }, (_, r) => (
-          <div
-            key={`row-gutter-${r}`}
-            className="grid-gutter grid-gutter-row"
-            style={{ gridRow: 2 * (r + 1), gridColumn: '1 / -1' }}
-            onPointerDown={(e) => startGutterDrag(e, 'row', r)}
-            onDoubleClick={() => setRowFr(evenTracks(rows))}
-            role="separator"
-            aria-orientation="horizontal"
-            aria-label={`Resize rows ${r + 1} and ${r + 2}`}
-            title="Drag to resize · double-click to reset"
-          />
-        ))}
+        {Array.from({ length: Math.max(0, rows - 1) }, (_, r) =>
+          Array.from({ length: cols }, (_, c) => (
+            <div
+              key={`row-gutter-${r}-${c}`}
+              className="grid-gutter grid-gutter-row"
+              style={{ gridRow: 2 * (r + 1), gridColumn: 2 * c + 1 }}
+              onPointerDown={(e) => startGutterDrag(e, 'row', r)}
+              onDoubleClick={() => setRowFr(evenTracks(rows))}
+              role={c === 0 ? 'separator' : undefined}
+              aria-orientation={c === 0 ? 'horizontal' : undefined}
+              aria-label={c === 0 ? `Resize rows ${r + 1} and ${r + 2}` : undefined}
+              aria-hidden={c === 0 ? undefined : true}
+              title="Drag to resize · double-click to reset"
+            />
+          )),
+        )}
       </div>
       <DragGhost />
     </>
