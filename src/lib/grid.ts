@@ -17,3 +17,9 @@ export function gridForCount(n: number): GridSpec {
   const clamped = Math.min(10, Math.max(1, n | 0))
   return TABLE[clamped]
 }
+
+/** How many tracks a `grid-template-*` string declares. */
+export function trackCount(template: string): number {
+  const trimmed = template.trim()
+  return trimmed === '' ? 0 : trimmed.split(/\s+/).length
+}

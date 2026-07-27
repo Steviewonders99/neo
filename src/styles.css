@@ -133,7 +133,8 @@ body { color: var(--text); }
 .grid-layout {
   flex: 1;
   display: grid;
-  gap: 8px;
+  /* Spacing comes from real gutter tracks, not `gap`, so the gaps are grabbable. */
+  gap: 0;
   padding: 8px;
   min-height: 0;
 }
@@ -421,6 +422,103 @@ body { color: var(--text); }
   font-size: 12px;
   letter-spacing: 0.05em;
   text-shadow: 0 0 6px rgba(255,92,87,0.55);
+}
+
+/* ---- Drag to reorder ---------------------------------------------------- */
+
+.pane-header { cursor: grab; }
+.pane-header:active { cursor: grabbing; }
+/* Interactive bits inside the header keep their own cursors */
+.pane-task, .pane-task-input { cursor: text; }
+.pane-minimize, .pane-close { cursor: pointer; }
+
+.pane.dragging {
+  opacity: 0.35;
+  transform: scale(0.985);
+}
+.pane.drop-target {
+  border-color: var(--border-attn);
+  box-shadow:
+    inset 0 0 0 1px var(--border-attn),
+    0 0 16px rgba(57, 255, 20, 0.35);
+}
+/* While reordering, terminals must not eat the pointer or start a selection */
+body.reordering .terminal-mount { pointer-events: none; }
+body.reordering { user-select: none; -webkit-user-select: none; }
+
+.pane-drag-ghost {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(0, 12, 0, 0.9);
+  border: 1px solid var(--border-focus);
+  box-shadow: 0 0 14px rgba(57, 255, 20, 0.45);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  color: var(--text);
+  white-space: nowrap;
+}
+.pane-drag-ghost-repo { color: var(--green); font-weight: 600; }
+.pane-drag-ghost-task { color: var(--text-muted); }
+
+/* ---- Resizable gutters -------------------------------------------------- */
+
+.grid-gutter {
+  position: relative;
+  z-index: 5;
+  -webkit-app-region: no-drag;
+}
+.grid-gutter::after {
+  content: '';
+  position: absolute;
+  background: transparent;
+  border-radius: 1px;
+  transition: background 120ms ease, box-shadow 120ms ease;
+}
+.grid-gutter-col { cursor: col-resize; }
+.grid-gutter-col::after {
+  top: 0; bottom: 0; left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+}
+.grid-gutter-row { cursor: row-resize; }
+.grid-gutter-row::after {
+  left: 0; right: 0; top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+.grid-gutter:hover::after,
+body.resizing-col .grid-gutter-col::after,
+body.resizing-row .grid-gutter-row::after {
+  background: var(--border-focus);
+  box-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+}
+/* Hold the resize cursor and kill selection across the whole window mid-drag */
+body.resizing-col, body.resizing-col * { cursor: col-resize !important; }
+body.resizing-row, body.resizing-row * { cursor: row-resize !important; }
+body.resizing-col, body.resizing-row {
+  user-select: none;
+  -webkit-user-select: none;
+}
+body.resizing-col .terminal-mount,
+body.resizing-row .terminal-mount { pointer-events: none; }
+
+/* ---- Archived dock, grid-full state ------------------------------------- */
+
+.minimized-dock-count { color: var(--text-muted); }
+.minimized-chip.blocked { opacity: 0.45; cursor: not-allowed; }
+.minimized-chip.blocked:hover {
+  border-color: var(--border);
+  color: var(--text);
 }
 
 @keyframes welcome-blink {

@@ -57,10 +57,17 @@ export function Terminal({ paneId }: Props) {
     const initialRows = term.rows
     ipc.resize(paneId, initialCols, initialRows).catch(() => {})
 
-    // Window/container resize
+    // Window/container resize. Coalesced to one fit per frame — dragging a pane
+    // gutter fires the observer continuously, and an un-throttled fit would send
+    // a resize IPC call per observation.
+    let resizeRaf: number | null = null
     const ro = new ResizeObserver(() => {
-      fit.fit()
-      ipc.resize(paneId, term.cols, term.rows).catch(() => {})
+      if (resizeRaf !== null) return
+      resizeRaf = requestAnimationFrame(() => {
+        resizeRaf = null
+        fit.fit()
+        ipc.resize(paneId, term.cols, term.rows).catch(() => {})
+      })
     })
     ro.observe(containerRef.current)
 
@@ -68,6 +75,7 @@ export function Terminal({ paneId }: Props) {
       disposeData.dispose()
       unsubData?.()
       unsubExit?.()
+      if (resizeRaf !== null) cancelAnimationFrame(resizeRaf)
       ro.disconnect()
       term.dispose()
     }
