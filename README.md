@@ -4,9 +4,9 @@
 
 # NEO
 
-**A native macOS multi-pane terminal for running up to 10 Claude Code sessions in parallel.**
+**A native macOS multi-pane terminal for running up to 20 Claude Code sessions in parallel.**
 
-Frosted-glass window, clean monochrome terminals, repo context auto-injection — built for managing many Claude sessions in one place.
+Frosted-glass window, clean monochrome terminals, drag-to-reorder and resizable panes — built for managing many Claude sessions in one place.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-39FF14.svg)](LICENSE)
 [![Tauri 2](https://img.shields.io/badge/Tauri-2-39FF14.svg)](https://tauri.app)
@@ -22,8 +22,9 @@ Claude Code is great for one focused task at a time. But when you want to run **
 
 NEO is built for that exact workflow:
 
-- **Up to 10 Claude (or shell) panes** in one window, auto-tiled by count.
-- **Auto-attached repo context** — when you spawn a pane in a repo, NEO pre-loads CLAUDE.md, README, package.json/Cargo.toml/pyproject.toml, the last 5 commits, and the top-level layout into the session so Claude starts with full project awareness.
+- **Up to 20 Claude (or shell) panes** in one window — 10 on screen at a time, auto-tiled by count, the rest archived and still running.
+- **Drag to reorder** — grab any pane by its header and drop it on another. Insert-and-shift, like a Kanban board, and the grid stays gapless.
+- **Resizable panes** — drag the gutter between two panes to resize them; double-click it to even them out again. Sizes are held as fractions, so proportions survive a window resize.
 - **Archive panes without killing them** — minimize to a chip in the dock to preserve a long-running session without taking up grid space (Claude Code doesn't save chats; NEO keeps them alive).
 - **Native macOS feel** — `NSVisualEffectView` vibrancy, transparent overlay title bar, hidden titles.
 
@@ -68,15 +69,16 @@ npm test                              # frontend (vitest — grid math)
 cd src-tauri && cargo test --lib      # backend
 ```
 
-14 backend tests + 10 frontend tests, all green.
+14 backend tests + 34 frontend tests, all green.
 
 ## Usage
 
 1. Launch NEO. You'll see the matrix rain welcome with a `$ cd` prompt centered.
 2. Type a path (e.g. `~/projects/your-repo` or `cd /Users/you/code/app`) and hit Enter.
-3. A Claude pane spawns in that directory with repo context auto-injected as its first message.
-4. Add more panes with the `+` button (bottom-right). Auto-grid rebalances for 1–10 visible panes.
-5. Minimize panes you want to keep alive but hidden — click the `−` in any pane header.
+3. A Claude pane spawns in that directory.
+4. Add more panes with the `+` button (bottom-right). Auto-grid rebalances for 1–10 visible panes; panes 11–20 start archived.
+5. Drag a pane by its header onto another to reorder them. Drag the gutter between two panes to resize; double-click a gutter to reset.
+6. Minimize panes you want to keep alive but hidden — click the `−` in any pane header.
 
 ## Configuration
 
@@ -88,8 +90,7 @@ NEO ships with sensible defaults. The most useful knobs live in code rather than
 ## Roadmap
 
 v1.5+:
-- Persistent layouts (restore panes on relaunch)
-- Drag-reorder panes
+- Persistent layouts (restore pane order + sizes on relaunch)
 - Settings UI
 - Custom keybindings
 - Optional LLM-call task summarization (OpenRouter / Anthropic)

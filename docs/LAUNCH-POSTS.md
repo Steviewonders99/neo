@@ -78,11 +78,11 @@ iTerm splits help, but they're dumb terminals. You can't tell from a glance whic
 
 So I built NEO.
 
-It's a native macOS Tauri 2 app that runs up to 10 Claude Code sessions in a single auto-tiled window. The differentiator isn't the layout — it's that **the app reads Claude's output and knows what state each session is in**. Idle, working, or waiting on permission. The pane border pulses when Claude needs you. If the window isn't focused, you get a real macOS notification with the repo and task title.
+It's a native macOS Tauri 2 app that runs up to 20 Claude Code sessions in a single auto-tiled window, 10 on screen at a time. The differentiator isn't the layout — it's that **the app reads Claude's output and knows what state each session is in**. Idle, working, or waiting on permission. The pane border pulses when Claude needs you. If the window isn't focused, you get a real macOS notification with the repo and task title.
 
 Three more things that made the workflow snap into place:
 
-1. **Auto-injected repo context** — when I open a Claude pane in a repo, NEO pre-loads CLAUDE.md, README, package.json, the last five git commits, and the top-level directory layout as Claude's first message. No more "let me look around the codebase first."
+1. **Drag-to-reorder and resizable panes** — grab a pane by its header and drop it on another to rearrange the grid, insert-and-shift like a Kanban board. Drag the gutter between two panes to resize them; double-click it to even them out. Sizes are fractions, so the proportions survive a window resize.
 
 2. **Archive without killing** — Claude Code doesn't persist chats, so closing a tab loses the conversation. NEO's "minimize" button moves a pane into a dock strip while keeping the PTY alive. Click the chip, the conversation comes back.
 
@@ -102,7 +102,7 @@ If you're running Claude Code for multiple things at once, give it a try. If you
 
 **Short version (3 paragraphs):**
 
-Hey — I built **NEO**, a native macOS app for running up to 10 Claude Code sessions in parallel in one window. Frosted glass background (real NSVisualEffectView), matrix-green phosphor terminals, per-pane activity awareness, macOS notifications when an inactive agent needs you, auto-injected repo context on spawn, archive-without-kill for long sessions.
+Hey — I built **NEO**, a native macOS app for running up to 20 Claude Code sessions in parallel in one window (10 visible at a time). Frosted glass background (real NSVisualEffectView), matrix-green phosphor terminals, per-pane activity awareness, macOS notifications when an inactive agent needs you, drag-to-reorder and resizable panes, archive-without-kill for long sessions.
 
 Built with Tauri 2 + Rust + React + xterm.js. macOS only. MIT licensed. Full design doc and 26-task plan in the repo.
 
