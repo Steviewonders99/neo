@@ -3,8 +3,6 @@ mod commands;
 mod notifier;
 mod pty;
 mod recents;
-mod repo_context;
-mod summarizer;
 mod window;
 
 use std::sync::Arc;
@@ -34,7 +32,6 @@ pub fn run() {
             commands::set_pane_meta,
             commands::pane_focus,
             commands::list_dir_completions,
-            repo_context::build_repo_context_cmd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { open as openDialog } from '@tauri-apps/plugin-dialog'
 import { homeDir } from '@tauri-apps/api/path'
 import { useStore } from '../state/store'
-import { dirs, ipc, recentDirs, repoContext, type RecentDir } from '../lib/ipc'
+import { dirs, recentDirs, type RecentDir } from '../lib/ipc'
 
 const HOME_FALLBACK = '/Users/stevenjunop'
 
@@ -73,32 +73,8 @@ export function PaneLauncher() {
       return
     }
     try {
-      // Spawn the pane first
       await addPane({ cwd, task: '', kind })
       await recentDirs.add(cwd)
-      // For Claude panes, pre-load repo context so Claude has full project awareness
-      if (kind === 'claude') {
-        const pane = useStore
-          .getState()
-          .panes
-          .filter((p) => p.cwd === cwd)
-          .pop()
-        if (pane) {
-          const ctx = await repoContext.build(cwd).catch(() => '')
-          if (ctx.trim()) {
-            // Wait briefly for Claude to be ready, then paste the context as a user message.
-            // We send the context followed by a newline so it lands as the first prompt.
-            setTimeout(() => {
-              const bytes = Array.from(
-                new TextEncoder().encode(
-                  `Here is project context for our session:\n\n${ctx}\n`,
-                ),
-              )
-              ipc.write(pane.id, bytes).catch(() => {})
-            }, 1200)
-          }
-        }
-      }
       close()
     } catch (e: unknown) {
       setError(String(e))
@@ -200,8 +176,8 @@ export function PaneLauncher() {
               checked={kind === 'claude'}
               onChange={() => setKind('claude')}
             />
-            Claude (with auto-injected repo context)
-          </label>
+            Claude
+</label>
           <label className="radio">
             <input
               type="radio"

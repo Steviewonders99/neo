@@ -55,14 +55,3 @@ export const meta = {
 export const dirs = {
   list: (prefix: string) => invoke<string[]>('list_dir_completions', { prefix }),
 }
-
-export const repoContext = {
-  build: (cwd: string) => invoke<string>('build_repo_context_cmd', { cwd }),
-}
-
-export function listenTaskSuggestion(
-  id: string,
-  cb: (title: string) => void,
-): Promise<UnlistenFn> {
-  return listen<string>(`task_suggestion:${id}`, (e) => cb(e.payload))
-}
