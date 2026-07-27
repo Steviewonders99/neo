@@ -1,11 +1,15 @@
 import { create } from 'zustand'
 import { v4 as uuid } from 'uuid'
 import type { Pane, PaneStatus, AddPaneArgs } from './types'
+import { movePaneOrder } from '../lib/reorder'
+import { MAX_PANES, MAX_VISIBLE, visibleCount } from '../lib/limits'
 
 type State = {
   panes: Pane[]
   focusedId: string | null
   isLauncherOpen: boolean
+  draggingId: string | null
+  dropTargetId: string | null
 
   insertPane(pane: Pane): void
   removePaneLocal(id: string): void
@@ -18,12 +22,18 @@ type State = {
   closeLauncher(): void
   addPane(args: AddPaneArgs): Promise<void>
   removePane(id: string): Promise<void>
+  beginDrag(id: string): void
+  setDropTarget(id: string | null): void
+  endDrag(): void
+  movePane(fromId: string, toId: string): void
 }
 
 export const useStore = create<State>((set, get) => ({
   panes: [],
   focusedId: null,
   isLauncherOpen: false,
+  draggingId: null,
+  dropTargetId: null,
 
   insertPane: (pane) =>
     set((s) => ({ panes: [...s.panes, pane], focusedId: pane.id })),
@@ -43,6 +53,13 @@ export const useStore = create<State>((set, get) => ({
 
   toggleMinimize: (id) =>
     set((s) => {
+      const current = s.panes.find((p) => p.id === id)
+      if (!current) return s
+      // Restoring while the grid is already full is refused rather than bumping
+      // something else off screen. The dock shows the count so the block reads
+      // as intentional.
+      if (current.minimized && visibleCount(s.panes) >= MAX_VISIBLE) return s
+
       const panes = s.panes.map((p) =>
         p.id === id ? { ...p, minimized: !p.minimized } : p,
       )
@@ -81,9 +98,15 @@ export const useStore = create<State>((set, get) => ({
   closeLauncher: () => set({ isLauncherOpen: false }),
 
   addPane: async (args) => {
-    if (get().panes.length >= 10) return
-    const pane = makePane(args)
-    set((s) => ({ panes: [...s.panes, pane], focusedId: pane.id }))
+    if (get().panes.length >= MAX_PANES) return
+    // Past MAX_VISIBLE the new pane starts archived, so nothing already on
+    // screen is pushed out from under the user. Its PTY still spawns.
+    const startArchived = visibleCount(get().panes) >= MAX_VISIBLE
+    const pane = makePane(args, startArchived)
+    set((s) => ({
+      panes: [...s.panes, pane],
+      focusedId: startArchived ? s.focusedId : pane.id,
+    }))
     const { ipc } = await import('../lib/ipc')
     try {
       await ipc.spawn({
@@ -116,9 +139,23 @@ export const useStore = create<State>((set, get) => ({
       return { panes, focusedId }
     })
   },
+
+  beginDrag: (id) => set({ draggingId: id, dropTargetId: null }),
+
+  // Guarded so a pointermove that stays inside the same pane doesn't re-render.
+  setDropTarget: (id) =>
+    set((s) => (s.dropTargetId === id ? s : { dropTargetId: id })),
+
+  endDrag: () => set({ draggingId: null, dropTargetId: null }),
+
+  movePane: (fromId, toId) =>
+    set((s) => {
+      const panes = movePaneOrder(s.panes, fromId, toId)
+      return panes === s.panes ? s : { panes }
+    }),
 }))
 
-export function makePane(args: AddPaneArgs): Pane {
+export function makePane(args: AddPaneArgs, minimized = false): Pane {
   const repo = args.cwd.split('/').filter(Boolean).pop() ?? args.cwd
   return {
     id: uuid(),
@@ -129,6 +166,6 @@ export function makePane(args: AddPaneArgs): Pane {
     status: 'starting',
     unread: false,
     exitCode: null,
-    minimized: false,
+    minimized,
   }
 }

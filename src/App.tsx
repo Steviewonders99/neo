@@ -4,6 +4,7 @@ import { PaneLauncher } from './components/PaneLauncher'
 import { MinimizedDock } from './components/MinimizedDock'
 import { Welcome } from './components/Welcome'
 import { useStore } from './state/store'
+import { MAX_PANES } from './lib/limits'
 
 export default function App() {
   const panes = useStore((s) => s.panes)
@@ -21,8 +22,9 @@ export default function App() {
         <button
           className="fab-new-pane"
           onClick={openLauncher}
-          disabled={panes.length >= 10}
+          disabled={panes.length >= MAX_PANES}
           aria-label="new pane"
+          title={`New pane (${panes.length}/${MAX_PANES})`}
         >
           ＋
         </button>
