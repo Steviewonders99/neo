@@ -1,8 +1,8 @@
 [package]
 name = "neo"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
-description = "Native macOS app for running up to 10 Claude Code sessions in parallel."
+description = "Native macOS app for running up to 20 Claude Code sessions in parallel."
 license = "MIT"
 authors = ["Steven Junop <stevenjunop@gmail.com>"]
 repository = "https://github.com/Steviewonders99/neo"

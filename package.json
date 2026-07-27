@@ -1,7 +1,7 @@
 {
   "name": "neo",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "description": "Native macOS Tauri 2 app for running up to 20 Claude Code (or shell) sessions in parallel — frosted glass + auto-tiled panes with drag-to-reorder and resizable gutters.",
   "license": "MIT",

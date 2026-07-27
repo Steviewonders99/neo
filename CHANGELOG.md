@@ -4,6 +4,10 @@ All notable changes to NEO are documented in this file. Format follows [Keep a C
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-07-27
+
+Pane manipulation, a monochrome terminal, and a new identity.
+
 ### Added
 - Drag-to-reorder panes — grab a pane by its header and drop it on another. Insert-and-shift semantics, like a Kanban board; the auto-tiled grid stays gapless. Escape cancels a drag in progress.
 - Resizable panes — drag the gutter between two panes to resize them, double-click a gutter to reset that axis to even. Track sizes are held as fractions, so pane proportions are preserved when the OS window is resized.
